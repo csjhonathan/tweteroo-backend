@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // GET METHODS
 app.get('/tweets', (req, res) => {
-  res.send(getTweets());
+  res.send(getTweets()[0]);
 });
 
 
@@ -33,10 +33,9 @@ app.post('/tweets', (req, res) => {
   const data = req.body;
   const { tweet, username: name } = data;
   const USER = getUsers().filter(({ username }) => name === username)[0];
-  console.log(tweet);
 
   if (USER) {
-    getTweets().push({ ...USER, tweet });
+    getTweets()[1].push({ ...USER, tweet });
     res
       .status(200)
       .send(JSON.stringify(data));
