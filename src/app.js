@@ -1,32 +1,11 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import getTweets from './constants/tweets.js';
+import getUsers from './constants/users.js';
 
 const app = express();
 const PORT = 5000;
-let USER = '';
-let TWEETS = [
-  {
-    username: 'bobesponja',
-    avatar: 'https://cdn.shopify.com/s/files/1/0150/0643/3380/files/Screen_Shot_2019-07-01_at_11.35.42_AM_370x230@2x.png',
-    tweet: 'Eu amo hambúrguer de siri!'
-  },
-  {
-    username: 'bobesponja',
-    avatar: 'https://cdn.shopify.com/s/files/1/0150/0643/3380/files/Screen_Shot_2019-07-01_at_11.35.42_AM_370x230@2x.png',
-    tweet: 'Eu amo hambúrguer de siri!'
-  },
-  {
-    username: 'bobesponja',
-    avatar: 'https://cdn.shopify.com/s/files/1/0150/0643/3380/files/Screen_Shot_2019-07-01_at_11.35.42_AM_370x230@2x.png',
-    tweet: 'Eu amo hambúrguer de siri!'
-  },
-  {
-    username: 'bobesponja',
-    avatar: 'https://cdn.shopify.com/s/files/1/0150/0643/3380/files/Screen_Shot_2019-07-01_at_11.35.42_AM_370x230@2x.png',
-    tweet: 'Eu amo hambúrguer de siri!'
-  }
-];
 // LISTEN
 app.listen(PORT, () => console.log(`Server is open on http://localhost:${PORT}`));
 
@@ -37,22 +16,33 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // GET METHODS
 app.get('/tweets', (req, res) => {
-  res.send(TWEETS);
+  res.send(getTweets());
 });
 
 
 // POST METHODS
 
 app.post('/sign-up', (req, res) => {
-  let data = req.body;
-  USER = data;
-  console.log(USER);
-  res.send(JSON.stringify(data));
+  const data = req.body;
+  getUsers().push(data);
+  res
+    .send(JSON.stringify(data));
 });
 
 app.post('/tweets', (req, res) => {
   const data = req.body;
-  const tweet = data.tweet;
-  TWEETS = [...TWEETS, { ...USER, tweet }];
-  res.send(JSON.stringify(data));
+  const { tweet, username: name } = data;
+  const USER = getUsers().filter(({ username }) => name === username)[0];
+  console.log(tweet);
+
+  if (USER) {
+    getTweets().push({ ...USER, tweet });
+    res
+      .status(200)
+      .send(JSON.stringify(data));
+  } else {
+    res
+      .status(400)
+      .send('UNAUTHORIZED');
+  }
 });
