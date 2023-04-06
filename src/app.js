@@ -48,9 +48,16 @@ app.get('/tweets/:USERNAME', (req, res) => {
 
 app.post('/sign-up', (req, res) => {
   const { username, avatar } = req.body;
+  if (!username) {
+    res
+      .status(400)
+      .send('Todos os campos são obrigatórios/Números não são aceitos');
+    return;
+  }
   const userNameHaveNumber = !username.split('').every(l => Number.isNaN(Number(l)));
   const avatarIsValid = Number.isNaN(Number(avatar));
-  if ((!username || !avatar) || (userNameHaveNumber || !avatarIsValid)) {
+
+  if (!avatar || (userNameHaveNumber || !avatarIsValid)) {
     res
       .status(400)
       .send('Todos os campos são obrigatórios/Números não são aceitos');
