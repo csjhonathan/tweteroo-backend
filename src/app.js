@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import getTweets from './constants/tweets.js';
 import getUsers from './constants/users.js';
-import userNameIsValid from './constants/usernameValidation.js';
+
 const app = express();
 const PORT = 5000;
 
@@ -48,19 +48,10 @@ app.get('/tweets/:USERNAME', (req, res) => {
 
 app.post('/sign-up', (req, res) => {
   const { username, avatar } = req.body;
-  if (!username) {
+  if (!username || !avatar) {
     res
       .status(400)
-      .send('Todos os campos são obrigatórios/Números não são aceitos');
-    return;
-  }
-  const userNameHaveNumber = !username.split('').every(l => Number.isNaN(Number(l)));
-  const avatarIsValid = Number.isNaN(Number(avatar));
-
-  if (!avatar || (userNameHaveNumber || !avatarIsValid || !userNameIsValid(username))) {
-    res
-      .status(400)
-      .send('Todos os campos são obrigatórios/Números/caracteres especiais não são aceitos');
+      .send('Todos os campos são obrigatórios');
     return;
   }
   getUsers().push({ username, avatar });
@@ -73,7 +64,7 @@ app.post('/tweets', (req, res) => {
   const { tweet } = req.body;
   const { user: username } = req.headers;
   const USER = getUsers().find(({ username: name }) => name === username);
-  const isString = Number.isNaN(Number(tweet));
+
   if (!USER) {
     res
       .status(401)
@@ -81,10 +72,10 @@ app.post('/tweets', (req, res) => {
     return;
   }
 
-  if (!username || !tweet || !isString) {
+  if (!username || !tweet) {
     res
       .status(400)
-      .send('Todos os campos são obrigatórios/Numeros não são aceitos');
+      .send('Todos os campos são obrigatórios');
     return;
   }
 
