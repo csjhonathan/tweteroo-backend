@@ -48,7 +48,7 @@ app.get('/tweets/:USERNAME', (req, res) => {
 
 app.post('/sign-up', (req, res) => {
   const { username, avatar } = req.body;
-  if (!username || !avatar) {
+  if (!username || !avatar || !Number.isNaN(Number(avatar))) {
     res
       .status(400)
       .send('Todos os campos são obrigatórios');
@@ -72,10 +72,10 @@ app.post('/tweets', (req, res) => {
     return;
   }
 
-  if (!username || !tweet) {
+  if (!username || !tweet || !Number.isNaN(Number(tweet))) {
     res
       .status(400)
-      .send('Todos os campos são obrigatórios');
+      .send('Todos os campos são obrigatórios/Tweet não pode conter apenas números');
     return;
   }
 
