@@ -48,7 +48,8 @@ app.get('/tweets/:USERNAME', (req, res) => {
 
 app.post('/sign-up', (req, res) => {
   const { username, avatar } = req.body;
-  const userNameHaveNumber = username.split('').some(l => typeof Number(l) === 'number');
+  const userNameHaveNumber = !username.split('').every(l => Number.isNaN(Number(l)));
+  console.log(userNameHaveNumber);
   if (!username || !avatar || userNameHaveNumber) {
     res
       .status(400)
