@@ -48,10 +48,11 @@ app.get('/tweets/:USERNAME', (req, res) => {
 
 app.post('/sign-up', (req, res) => {
   const { username, avatar } = req.body;
-  if (!username || !avatar) {
+  const userNameHaveNumber = username.split('').some(l => typeof Number(l) === 'number');
+  if (!username || !avatar || userNameHaveNumber) {
     res
       .status(400)
-      .send('Todos os campos são obrigatórios');
+      .send('Todos os campos são obrigatórios/Números não são aceitos');
     return;
   }
   getUsers().push({ username, avatar });
@@ -64,7 +65,7 @@ app.post('/tweets', (req, res) => {
   const { tweet } = req.body;
   const { user: username } = req.headers;
   const USER = getUsers().find(({ username: name }) => name === username);
-
+  const isString = typeof Number(tweet) === 'number';
   if (!USER) {
     res
       .status(401)
@@ -72,10 +73,10 @@ app.post('/tweets', (req, res) => {
     return;
   }
 
-  if (!username || !tweet) {
+  if (!username || !tweet || !isString) {
     res
       .status(400)
-      .send('Todos os campos são obrigatórios');
+      .send('Todos os campos são obrigatórios/Numeros não são aceitos');
     return;
   }
 
