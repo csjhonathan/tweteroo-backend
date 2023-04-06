@@ -4,17 +4,12 @@
     "ecmaVersion": "latest"
   },
   "extends": [
-    "airbnb-base/legacy",
-    "prettier"
+    "airbnb-base/legacy"
   ],
   "rules": {
     "quotes": [
       "error",
       "single"
-    ],
-    "indent": [
-      "error",
-      2
     ],
     "semi": [
       "error",

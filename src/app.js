@@ -1,24 +1,22 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import cors from 'cors';
 import getTweets from './constants/tweets.js';
 import getUsers from './constants/users.js';
 
 const app = express();
 const PORT = 5000;
+
 // LISTEN
 app.listen(PORT, () => console.log(`Server is open on http://localhost:${PORT}`));
 
 // APP.USES
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 
 // GET METHODS
 app.get('/tweets', (req, res) => {
   res.send(getTweets()[0]);
 });
-
 
 // POST METHODS
 
@@ -26,7 +24,7 @@ app.post('/sign-up', (req, res) => {
   const data = req.body;
   getUsers().push(data);
   res
-    .send(JSON.stringify(data));
+    .send(data);
 });
 
 app.post('/tweets', (req, res) => {
@@ -38,7 +36,7 @@ app.post('/tweets', (req, res) => {
     getTweets()[1].push({ ...USER, tweet });
     res
       .status(200)
-      .send(JSON.stringify(data));
+      .send(data);
   } else {
     res
       .status(400)
