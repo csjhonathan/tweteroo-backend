@@ -10,36 +10,77 @@ const PORT = 5000;
 app.listen(PORT, () => console.log(`Server is open on http://localhost:${PORT}`));
 
 // APP.USES
-app.use(cors());
-app.use(express.json());
+app
+  .use(cors())
+  .use(express.json());
 
 // GET METHODS
 app.get('/tweets', (req, res) => {
-  res.send(getTweets()[0]);
+  const { page } = req.query;
+
+  if (page >= 1) {
+    res
+      .status(200)
+      .send(getTweets(page)[0]);
+    return;
+  }
+  if (page && page < 1) {
+    res
+      .status(400)
+      .send('Informe uma página válida');
+  }
+  if (!page) {
+    res
+      .status(200)
+      .send(getTweets(undefined)[0]);
+  }
+});
+
+app.get('/tweets/:USERNAME', (req, res) => {
+  const { USERNAME } = req.params;
+  const USERTWEETS = getTweets()[0].filter(({ username }) => USERNAME === username);
+  res
+    .status(200)
+    .send(USERTWEETS);
 });
 
 // POST METHODS
 
 app.post('/sign-up', (req, res) => {
-  const data = req.body;
-  getUsers().push(data);
+  const { username, avatar } = req.body;
+  if (!username || !avatar) {
+    res
+      .status(400)
+      .send('Todos os campos são obrigatórios');
+    return;
+  }
+  getUsers().push({ username, avatar });
   res
-    .send(data);
+    .status(201)
+    .send('OK!');
 });
 
 app.post('/tweets', (req, res) => {
-  const data = req.body;
-  const { tweet, username: name } = data;
-  const USER = getUsers().filter(({ username }) => name === username)[0];
+  const { tweet } = req.body;
+  const { user: username } = req.headers;
+  const USER = getUsers().find(({ username: name }) => name === username);
 
-  if (USER) {
-    getTweets()[1].push({ ...USER, tweet });
+  if (!USER) {
     res
-      .status(200)
-      .send(data);
-  } else {
+      .status(401)
+      .send('UNAUTHORIZED');
+    return;
+  }
+
+  if (!username || !tweet) {
     res
       .status(400)
-      .send('UNAUTHORIZED');
+      .send('Todos os campos são obrigatórios');
+    return;
   }
+
+  getTweets()[1].push({ ...USER, tweet });
+  res
+    .status(201)
+    .send('OK!');
 });
