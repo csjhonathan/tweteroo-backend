@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import getTweets from './constants/tweets.js';
 import getUsers from './constants/users.js';
-
+import userNameIsValid from './constants/usernameValidation.js';
 const app = express();
 const PORT = 5000;
 
@@ -57,10 +57,10 @@ app.post('/sign-up', (req, res) => {
   const userNameHaveNumber = !username.split('').every(l => Number.isNaN(Number(l)));
   const avatarIsValid = Number.isNaN(Number(avatar));
 
-  if (!avatar || (userNameHaveNumber || !avatarIsValid)) {
+  if (!avatar || (userNameHaveNumber || !avatarIsValid || !userNameIsValid(username))) {
     res
       .status(400)
-      .send('Todos os campos são obrigatórios/Números não são aceitos');
+      .send('Todos os campos são obrigatórios/Números/caracteres especiais não são aceitos');
     return;
   }
   getUsers().push({ username, avatar });
